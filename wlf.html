@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" id="htmlTag">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title id="pageTitle">WLFGRAM | توکن رسمی</title>
+    
+    <!-- SEO & Open Graph Meta Tags -->
+    <meta name="description" content="پلتفرم رسمی اطلاعات، آمار زنده استخر نقدینگی و تحلیل توکن WLF روی شبکه TON و Gram.">
+    <meta property="og:title" content="WLFGRAM | توکن رسمی">
+    <meta property="og:description" content="مشاهده آمار لحظه‌ای، نمودار قیمت و اطلاعات استخر DeDust توکن WLF.">
+    <meta property="og:type" content="website">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- TON Connect UI CDN -->
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&family=Inter:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif'],
+                    },
+                    colors: {
+                        darkBg: '#0b0f19',
+                        cardBg: '#131c2e',
+                        lightBg: '#f8fafc',
+                        neonPurple: '#8b5cf6',
+                        neonCyan: '#06b6d4',
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-darkBg text-gray-100 font-sans antialiased selection:bg-neonPurple selection:text-white transition-colors duration-300" id="bodyTag">
+
+    <!-- Header / Navbar -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-purple-500/10 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 md:h-20 flex items-center justify-between">
+            
+            <!-- Logo Section -->
+            <div class="flex items-center space-x-3 space-x-reverse" id="logoContainer">
+                <div class="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-cyan-400 flex items-center justify-center glow-box">
+                    <span class="text-white font-black text-lg md:text-xl">W</span>
+                </div>
+                <span class="text-lg md:text-xl font-black bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">WLFGRAM</span>
+            </div>
+            
+            <!-- Navigation Links (Desktop) -->
+            <nav class="hidden md:flex items-center space-x-8 space-x-reverse text-sm font-medium text-gray-300">
+                <a href="#hero" data-i18n="navHome" class="hover:text-cyan-400 transition">صفحه اصلی</a>
+                <a href="#chart" data-i18n="navChart" class="hover:text-cyan-400 transition">نمودار و بازار</a>
+                <a href="#tokenomics" data-i18n="navTokenomics" class="hover:text-cyan-400 transition">توکنومیکس</a>
+                <a href="#roadmap" data-i18n="navRoadmap" class="hover:text-cyan-400 transition">نقشه راه</a>
+                <a href="#whitepaper" data-i18n="navWhitepaper" class="hover:text-cyan-400 transition">وایت‌پیپر</a>
+            </nav>
+
+            <!-- Control Buttons -->
+            <div class="flex items-center space-x-2 sm:space-x-3 space-x-reverse">
+                <!-- Theme Toggle Button -->
+                <button onclick="toggleTheme()" class="w-9 h-9 md:w-10 md:h-10 rounded-xl glass-panel border border-purple-500/20 flex items-center justify-center text-cyan-400 hover:scale-105 transition" aria-label="تغییر تم" title="تغییر تم">
+                    <i id="themeIcon" class="fa-solid fa-moon text-sm md:text-base"></i>
+                </button>
+
+                <!-- Language Toggle Button -->
+                <button onclick="toggleLanguage()" class="px-2.5 md:px-3 h-9 md:h-10 rounded-xl glass-panel border border-purple-500/20 flex items-center justify-center text-xs font-bold text-purple-400 hover:scale-105 transition" id="langBtn" aria-label="تغییر زبان">
+                    EN
+                </button>
+
+                <!-- Connect Wallet -->
+                <button onclick="openWalletModal()" data-i18n="walletBtn" class="px-3.5 md:px-5 h-9 md:h-10 rounded-xl bg-gradient-to-r from-purple-600 to-cyan-500 text-white font-bold text-xs md:text-sm shadow-lg shadow-purple-500/20 hover:opacity-90 transition transform hover:-translate-y-0.5">
+                    اتصال کیف پول
+                </button>
+
+                <!-- Mobile Menu Button -->
+                <button onclick="toggleMobileMenu()" class="md:hidden w-9 h-9 rounded-xl glass-panel border border-purple-500/20 flex items-center justify-center text-gray-300" aria-label="منوی موبایل">
+                    <i class="fa-solid fa-bars" id="menuIcon"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Dropdown Menu -->
+        <div id="mobileMenu" class="hidden md:hidden glass-panel border-b border-purple-500/10 px-4 py-4 space-y-3 text-sm font-medium text-gray-300">
+            <a href="#hero" onclick="toggleMobileMenu()" data-i18n="navHome" class="block py-2 hover:text-cyan-400">صفحه اصلی</a>
+            <a href="#chart" onclick="toggleMobileMenu()" data-i18n="navChart" class="block py-2 hover:text-cyan-400">نمودار و بازار</a>
+            <a href="#tokenomics" onclick="toggleMobileMenu()" data-i18n="navTokenomics" class="block py-2 hover:text-cyan-400">توکنومیکس</a>
+            <a href="#roadmap" onclick="toggleMobileMenu()" data-i18n="navRoadmap" class="block py-2 hover:text-cyan-400">نقشه راه</a>
+            <a href="#whitepaper" onclick="toggleMobileMenu()" data-i18n="navWhitepaper" class="block py-2 hover:text-cyan-400">وایت‌پیپر</a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="hero" class="pt-28 pb-16 md:pt-44 md:pb-32 relative overflow-hidden">
+        <div class="absolute top-1/4 right-1/4 w-72 md:w-96 h-72 md:h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute bottom-10 left-1/4 w-72 md:w-96 h-72 md:h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            <div class="inline-flex items-center space-x-2 space-x-reverse px-3.5 py-1.5 md:px-4 md:py-2 rounded-full glass-panel border border-purple-500/30 text-purple-300 text-xs font-semibold mb-6">
+                <i class="fa-solid fa-chart-line text-cyan-400"></i>
+                <span data-i18n="heroBadge">پلتفرم رسمی اطلاعات و معاملات توکن WLF</span>
+            </div>
+            <h1 class="text-3xl sm:text-5xl md:text-7xl font-black tracking-tight mb-4 md:mb-6 leading-tight">
+                <span data-i18n="heroTitlePart1">اکوسیستم مالی توکن</span> <br>
+                <span class="bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent glow-text">WLF/GRAM ($WLF)</span>
+            </h1>
+            <p data-i18n="heroDesc" class="max-w-2xl mx-auto text-gray-400 text-sm md:text-lg mb-8 leading-relaxed">
+                دسترسی به آمار لحظه‌ای بازار، بررسی داده‌های زنجیره‌ای و زیرساخت امن برای فعالان بازار رمزارز.
+            </p>
+            
+            <!-- Contract Address Display Box with Idea 4 (Modern Copy) -->
+            <div class="max-w-xl mx-auto mb-8 p-2.5 md:p-3 rounded-2xl glass-panel border border-purple-500/30 flex flex-col sm:flex-row items-center justify-between gap-2.5 text-xs md:text-sm">
+                <span class="text-gray-300 font-mono break-all sm:truncate select-all text-center sm:text-right" id="contractText">EQAUEpGOGqbJy-UIxQ6qblhqAROxgDuiMeB17zImB90n6st0</span>
+                <button onclick="copyContract()" id="copyBtnElement" class="w-full sm:w-auto px-4 py-2 rounded-xl bg-purple-600/30 hover:bg-purple-600 text-purple-300 hover:text-white transition font-bold flex items-center justify-center space-x-1.5 space-x-reverse shrink-0">
+                    <i class="fa-regular fa-copy"></i>
+                    <span data-i18n="copyBtn" class="copy-btn-text">کپی آدرس</span>
+                </button>
+            </div>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4">
+                <a href="#chart" data-i18n="heroBtnChart" class="w-full sm:w-auto px-8 py-3.5 md:py-4 rounded-xl bg-gradient-to-r from-purple-600 to-cyan-500 text-white font-bold shadow-xl shadow-purple-600/20 hover:scale-105 transition">
+                    مشاهده نمودار و قیمت
+                </a>
+                <a href="https://dedust.io/pools/EQC-M-HKtgd0kQ8pyQqn_tQXeV376KS-5lhuelzlzUWWhdQu" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-8 py-3.5 md:py-4 rounded-xl glass-panel border border-gray-700 hover:border-cyan-400 text-gray-200 font-bold transition flex items-center justify-center space-x-2 space-x-reverse">
+                    <i class="fa-solid fa-water text-cyan-400"></i>
+                    <span data-i18n="poolBtn">استخر نقدینگی DeDust</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Price & Market Chart Section -->
+    <section id="chart" class="py-16 md:py-20 relative">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="text-center mb-10 md:mb-12">
+                <h2 class="text-2xl md:text-3xl font-black mb-2 md:mb-3">
+                    <span data-i18n="chartTitle">آمار زنده استخر DeDust</span> <span class="text-cyan-400">$WLF</span>
+                </h2>
+                <p data-i18n="chartDesc" class="text-gray-400 text-xs md:text-sm">اطلاعات به‌روز و لحظه‌ای از استخر نقدینگی WLF/GRAM</p>
+            </div>
+
+            <!-- Market Stats Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+                <div class="glass-panel p-5 md:p-6 rounded-2xl border border-purple-500/20">
+                    <span data-i18n="stat1" class="text-gray-400 text-xs block mb-1">نرخ تبدیل (GRAM)</span>
+                    <span id="livePrice" class="text-xl md:text-2xl font-black text-white">0.000001135</span>
+                    <span data-i18n="stat1Sub" class="text-emerald-400 text-xs font-bold block mt-1">بروزرسانی زنده DeDust</span>
+                </div>
+                
+                <div class="glass-panel p-5 md:p-6 rounded-2xl border border-purple-500/20">
+                    <span data-i18n="stat2" class="text-gray-400 text-xs block mb-1">حجم معاملات (۲۴ ساعته)</span>
+                    <span id="liveVolume" class="text-xl md:text-2xl font-black text-cyan-400">$0</span>
+                    <span data-i18n="stat2Sub" class="text-gray-500 text-xs block mt-1">فعالیت استخر</span>
+                </div>
+
+                <div class="glass-panel p-5 md:p-6 rounded-2xl border border-purple-500/20">
+                    <span data-i18n="stat3" class="text-gray-400 text-xs block mb-1">کل نقدینگی (Liquidity)</span>
+                    <span id="liveMarketCap" class="text-xl md:text-2xl font-black text-purple-400">$23.71</span>
+                    <span data-i18n="stat3Sub" class="text-gray-500 text-xs block mt-1">ارزش دارایی استخر</span>
+                </div>
+
+                <div class="glass-panel p-5 md:p-6 rounded-2xl border border-purple-500/20">
+                    <span data-i18n="stat4" class="text-gray-400 text-xs block mb-1">قفل‌شده (Permanently Locked)</span>
+                    <span id="liveLiquidity" class="text-xl md:text-2xl font-black text-pink-400">100%</span>
+                    <span data-i18n="stat4Sub" class="text-gray-500 text-xs block mt-1">امنیت قرارداد</span>
+                </div>
+            </div>
+
+            <!-- Idea 1: Quick Swap Calculator Widget -->
+            <div class="glass-panel p-6 md:p-8 rounded-3xl border border-purple-500/20 mb-8">
+                <div class="flex items-center space-x-2 space-x-reverse mb-4">
+                    <i class="fa-solid fa-calculator text-cyan-400"></i>
+                    <h3 data-i18n="swapTitle" class="text-lg md:text-xl font-bold text-gray-200">محاسبه‌گر آنی تبدیل توکن</h3>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+                    <div>
+                        <label data-i18n="swapFrom" class="block text-xs text-gray-400 mb-1">مقدار WLF</label>
+                        <input type="number" id="swapInputWlf" value="100000" oninput="calculateSwap()" class="w-full bg-darkBg/60 border border-purple-500/30 rounded-xl px-4 py-3 text-white font-bold focus:outline-none focus:border-cyan-400 transition">
+                    </div>
+                    <div>
+                        <label data-i18n="swapTo" class="block text-xs text-gray-400 mb-1">معادل تقریبی (GRAM)</label>
+                        <div id="swapOutputGram" class="w-full bg-darkBg/40 border border-purple-500/10 rounded-xl px-4 py-3 text-cyan-400 font-black text-lg">0.1135 GRAM</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart Container -->
+            <div class="glass-panel p-4 md:p-8 rounded-3xl border border-purple-500/20">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+                    <span data-i18n="chartBoxTitle" class="text-lg md:text-xl font-bold text-gray-200">روند تغییرات قیمت استخر</span>
+                    <div class="flex space-x-1.5 md:space-x-2 space-x-reverse text-xs font-bold w-full sm:w-auto justify-between sm:justify-start">
+                        <button onclick="updateChart('24h')" id="btn-24h" data-i18n="btn24h" class="flex-1 sm:flex-none px-3 md:px-4 py-2 rounded-lg bg-purple-600 text-white transition">۲۴ ساعت</button>
+                        <button onclick="updateChart('7d')" id="btn-7d" data-i18n="btn7d" class="flex-1 sm:flex-none px-3 md:px-4 py-2 rounded-lg glass-panel hover:bg-purple-600/30 transition text-gray-300">۷ روز</button>
+                        <button onclick="updateChart('1m')" id="btn-1m" data-i18n="btn1m" class="flex-1 sm:flex-none px-3 md:px-4 py-2 rounded-lg glass-panel hover:bg-purple-600/30 transition text-gray-300">۱ ماه</button>
+                    </div>
+                </div>
+                <div class="relative w-full h-[280px] sm:h-[350px]">
+                    <canvas id="priceChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tokenomics Section -->
+    <section id="tokenomics" class="py-16 md:py-20 relative">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-12 md:mb-16">
+                <h2 class="text-2xl md:text-3xl font-black mb-2 md:mb-3"><span data-i18n="tokenomicsTitle">توکنومیکس</span> <span class="text-purple-400">WLFGRAM</span></h2>
+                <p data-i18n="tokenomicsDesc" class="text-gray-400 text-xs md:text-sm">ساختار شفاف و مدیریت توزیع دارایی‌ها</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+                <div class="glass-panel p-6 md:p-8 rounded-3xl border border-purple-500/20 text-center hover:border-cyan-400 transition">
+                    <div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-purple-600/20 flex items-center justify-center mx-auto mb-5 md:mb-6 text-purple-400 text-xl md:text-2xl font-bold">
+                        <i class="fa-solid fa-coins"></i>
+                    </div>
+                    <h3 data-i18n="tBox1Title" class="text-lg md:text-xl font-bold mb-2">سقف عرضه کل</h3>
+                    <p class="text-2xl md:text-3xl font-black text-cyan-400">90,000,000</p>
+                    <p data-i18n="tBox1Desc" class="text-gray-400 text-xs md:text-sm mt-2">حداکثر تعداد توکن‌های قابل استخراج/عرضه</p>
+                </div>
+                <div class="glass-panel p-6 md:p-8 rounded-3xl border border-purple-500/20 text-center hover:border-cyan-400 transition">
+                    <div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-cyan-600/20 flex items-center justify-center mx-auto mb-5 md:mb-6 text-cyan-400 text-xl md:text-2xl font-bold">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <h3 data-i18n="tBox2Title" class="text-lg md:text-xl font-bold mb-2">استخر نقدینگی (LP)</h3>
+                    <p data-i18n="tBox2Val" class="text-2xl md:text-3xl font-black text-purple-400">DeDust.io</p>
+                    <p data-i18n="tBox2Desc" class="text-gray-400 text-xs md:text-sm mt-2">تضمین‌شده در صرافی غیرمتمرکز</p>
+                </div>
+                <div class="glass-panel p-6 md:p-8 rounded-3xl border border-purple-500/20 text-center hover:border-cyan-400 transition">
+                    <div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-pink-600/20 flex items-center justify-center mx-auto mb-5 md:mb-6 text-pink-400 text-xl md:text-2xl font-bold">
+                        <i class="fa-solid fa-network-wired"></i>
+                    </div>
+                    <h3 data-i18n="tBox3Title" class="text-lg md:text-xl font-bold mb-2">شبکه میزبان</h3>
+                    <p class="text-2xl md:text-3xl font-black text-pink-400">Gram / TON</p>
+                    <p data-i18n="tBox3Desc" class="text-gray-400 text-xs md:text-sm mt-2">مبتنی بر استانداردهای شبکه</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Roadmap Section -->
+    <section id="roadmap" class="py-16 md:py-20 relative">
+        <div class="max-w-4xl mx-auto px-4">
+            <div class="text-center mb-12 md:mb-16">
+                <h2 class="text-2xl md:text-3xl font-black mb-2 md:mb-3"><span data-i18n="roadmapTitle">نقشه راه</span> <span data-i18n="roadmapSub" class="text-cyan-400">پروژه</span></h2>
+                <p data-i18n="roadmapDesc" class="text-gray-400 text-xs md:text-sm">مراحل توسعه و چشم‌انداز آینده WLFGRAM</p>
+            </div>
+            <div class="space-y-8 border-r-2 border-purple-500/30 pr-6 mr-3 md:mr-4 roadmap-timeline-container" id="roadmapLine">
+                <div class="relative">
+                    <div class="absolute top-1.5 w-4 h-4 rounded-full bg-cyan-400 ring-4 ring-darkBg roadmap-dot1"></div>
+                    <h3 data-i18n="r1Title" class="text-lg md:text-xl font-bold text-cyan-400 mb-1">فاز اول: توسعه زیرساخت و راه‌اندازی</h3>
+                    <p data-i18n="r1Desc" class="text-gray-400 text-xs md:text-sm">استقرار قرارداد هوشمند روی بستر شبکه، شکل‌گیری پایگاه اولیه و معرفی به جامعه هدف.</p>
+                </div>
+                <div class="relative">
+                    <div class="absolute top-1.5 w-4 h-4 rounded-full bg-purple-500 ring-4 ring-darkBg roadmap-dot2"></div>
+                    <h3 data-i18n="r2Title" class="text-lg md:text-xl font-bold text-purple-400 mb-1">فاز دوم: لیست شدن و تأمین نقدینگی</h3>
+                    <p data-i18n="r2Desc" class="text-gray-400 text-xs md:text-sm">عرضه در صرافی‌های مختلف، فعال‌سازی استخرهای نقدینگی و رصد داده‌های معاملاتی.</p>
+                </div>
+                <div class="relative">
+                    <div class="absolute top-1.5 w-4 h-4 rounded-full bg-gray-600 ring-4 ring-darkBg roadmap-dot3"></div>
+                    <h3 data-i18n="r3Title" class="text-lg md:text-xl font-bold text-gray-300 mb-1">فاز سوم: توسعه ابزار تحلیل و اکوسیستم</h3>
+                    <p data-i18n="r3Desc" class="text-gray-400 text-xs md:text-sm">گسترش قابلیت‌های تحلیلی، بهبود ابزارهای رصد بازار و ایجاد قابلیت‌های پیشرفته کاربری.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Whitepaper Section -->
+    <section id="whitepaper" class="py-16 md:py-20 relative">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <div class="glass-panel p-6 md:p-12 rounded-3xl border border-purple-500/30 glow-box relative overflow-hidden">
+                <div class="absolute -top-24 -right-24 w-48 h-48 bg-purple-600/20 rounded-full blur-2xl"></div>
+                <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-cyan-500/20 rounded-full blur-2xl"></div>
+                
+                <div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-gradient-to-tr from-purple-600 to-cyan-400 flex items-center justify-center mx-auto mb-5 md:mb-6 text-white text-xl md:text-2xl font-bold shadow-lg">
+                    <i class="fa-solid fa-file-pdf"></i>
+                </div>
+                
+                <h2 class="text-2xl md:text-3xl font-black mb-3 md:mb-4"><span data-i18n="whitepaperTitle">وایت‌پیپر رسمی</span> <span class="text-cyan-400">WLFGRAM</span></h2>
+                <p data-i18n="whitepaperDesc" class="text-gray-400 text-xs md:text-base mb-6 md:mb-8 max-w-xl mx-auto leading-relaxed">
+                    برای آشنایی کامل با اهداف، معماری فنی، توکنومیکس دقیق و چشم‌انداز آینده پروژه، می‌توانید وایت‌پیپر رسمی ما را مطالعه یا دانلود کنید.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <a href="whitepaper.pdf" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-8 py-3.5 md:py-4 rounded-xl bg-gradient-to-r from-purple-600 to-cyan-500 text-white font-bold shadow-xl shadow-purple-600/25 hover:scale-105 transition flex items-center justify-center space-x-2 space-x-reverse">
+                        <i class="fa-solid fa-download"></i>
+                        <span data-i18n="wpBtnDownload">دانلود وایت‌پیپر (PDF)</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-purple-500/10 py-8 md:py-12 text-center text-gray-500 text-xs md:text-sm">
+        <div class="max-w-7xl mx-auto px-4">
+            <p data-i18n="footerCopy" class="mb-4 font-bold text-gray-300">WLFGRAM ($WLF) - تمامی حقوق محفوظ است.</p>
+            <div class="flex justify-center space-x-6 space-x-reverse text-lg md:text-xl text-gray-400">
+                <a href="https://t.me/" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-400 transition" aria-label="تلگرام"><i class="fa-brands fa-telegram"></i></a>
+                <a href="https://twitter.com/" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-400 transition" aria-label="توییتر"><i class="fa-brands fa-twitter"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Connect Wallet Modal (Idea 2: TON Connect Container) -->
+    <div id="walletModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm hidden p-4">
+        <div class="glass-panel w-full max-w-md p-6 md:p-8 rounded-3xl border border-purple-500/30 relative">
+            <button onclick="closeWalletModal()" class="absolute top-5 left-5 md:top-6 md:left-6 text-gray-400 hover:text-white" aria-label="بستن پنجره">
+                <i class="fa-solid fa-xmark text-lg md:text-xl"></i>
+            </button>
+            <h3 data-i18n="modalTitle" class="text-xl md:text-2xl font-black mb-6 text-center">انتخاب کیف پول</h3>
+            
+            <!-- TON Connect Official Widget Button Container -->
+            <div id="ton-connect-button" class="flex justify-center mb-4"></div>
+
+            <div class="space-y-3 md:space-y-4">
+                <button onclick="connectWallet('tonkeeper')" class="w-full p-4 rounded-2xl glass-panel border border-purple-500/20 hover:border-cyan-400 flex items-center justify-between transition group">
+                    <span class="font-bold text-sm md:text-base group-hover:text-cyan-400 transition">Tonkeeper</span>
+                    <i class="fa-solid fa-wallet text-purple-400"></i>
+                </button>
+                <button onclick="connectWallet('telegram')" class="w-full p-4 rounded-2xl glass-panel border border-purple-500/20 hover:border-cyan-400 flex items-center justify-between transition group">
+                    <span class="font-bold text-sm md:text-base group-hover:text-cyan-400 transition">Telegram Wallet</span>
+                    <i class="fa-solid fa-paper-plane text-cyan-400"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
